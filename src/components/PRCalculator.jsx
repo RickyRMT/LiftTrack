@@ -1,20 +1,24 @@
 import { useState, useEffect } from "react";
 
 function PRCalculator() {
+  // Store the form inputs as strings so the fields can be cleared naturally.
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("");
+
+  // Holds the calculated one-rep max estimate, or null when there is no result.
   const [pr, setPr] = useState(null);
 
   useEffect(() => {
     const w = Number(weight);
     const r = Number(reps);
 
-    // only calculate if both weight and reps exist
+    // Only calculate if both weight and reps have been entered.
     if (weight === "" || reps === "") {
         setPr(null);
         return;
     }
 
+    // Epley formula: estimated 1RM = weight * (1 + reps / 30).
     const result = w * (1 + r / 30);
     setPr(result.toFixed(1));
   }, [weight, reps]);
@@ -36,6 +40,8 @@ function PRCalculator() {
         value={reps}
         onChange={(e) => setReps(e.target.value)}
       />
+
+      {/* Show the estimate only after a PR has been calculated. */}
       {pr && (
         <h3>
           Estimated 1RM: {pr} lbs
