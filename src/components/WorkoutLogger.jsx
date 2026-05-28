@@ -52,6 +52,16 @@ const groupedWorkouts = workouts.reduce((groups, workout) => {
   return groups;
 }, {});
 
+function formatExerciseName(name) {
+  return name
+    .toLowerCase()
+    .trim()
+    .split(" ")
+    .filter(word => word !== "")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 return (
   <div>
     <h2>Workout Logger</h2>
@@ -102,7 +112,7 @@ return (
         marginBottom: "10px"
       }}
     >
-      <h3>{exerciseName}</h3>
+      <h3>{formatExerciseName(exerciseName)}</h3>
 
       {sets.map((set, index) => (
         <div key={index}>
