@@ -88,23 +88,20 @@ function deleteExercise(exercise) {
   setWorkouts(updated);
 }
 
-function deleteExercise(exercise) {
+function deleteExercise(exerciseKey) {
   const confirmDelete = window.confirm(
-    `Are you sure you want to delete ALL ${formatExerciseName(exercise)} sets? This cannot be undone.`
+    "Are you sure you want to delete this entire exercise?"
   );
 
   if (!confirmDelete) return;
 
-  const updated = workouts.filter(
-    (w) => w.exercise.trim().toLowerCase() !== exercise
+  setWorkouts((prev) =>
+    prev.filter((w) => w.exerciseKey !== exerciseKey)
   );
-
-  setWorkouts(updated);
 }
 
 function deleteSet(id) {
-  const updated = workouts.filter((w) => w.id !== id);
-  setWorkouts(updated);
+  setWorkouts((prev) => prev.filter((w) => w.id !== id));
 }
 
 return (
@@ -147,25 +144,57 @@ return (
     <hr />
 
     <div>
-    {Object.entries(groupedByDate).map(([date, exercises]) => (
-    <div key={date}>
-        <h2>{date}</h2>
+{Object.entries(groupedByDate).map(([date, exercises]) => (
+  <div key={date}>
+    <h2>{date}</h2>
 
-        {Object.entries(exercises).map(([exerciseName, data]) => (
-        <div key={exerciseName}>
-            <h3>{formatExerciseName(data.displayName)}</h3>
+    {Object.entries(exercises).map(([exerciseKey, group]) => (
+      <div
+        key={exerciseKey}
+        style={{
+          border: "1px solid #ddd",
+          borderRadius: "10px",
+          padding: "12px",
+          marginBottom: "15px",
+          backgroundColor: "#181236",
+        }}
+      >
+        {/* Header row */}
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <h3>{formatExerciseName(group.displayName)}</h3>
 
-            <p>Total Volume: {data.totalVolume}</p>
-
-            {data.sets.map((set) => (
-            <div key={set.id}>
-                {set.weight} x {set.reps}
-            </div>
-            ))}
+          <button onClick={() => deleteExercise(exerciseKey)}>
+            Delete Exercise
+          </button>
         </div>
+
+        <p>
+          <strong>Total Volume:</strong> {group.totalVolume}
+        </p>
+
+        {/* Sets */}
+        {group.sets.map((set) => (
+          <div
+            key={set.id}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              padding: "5px 0",
+            }}
+          >
+            <span>
+              {set.weight} × {set.reps}
+            </span>
+
+            <button onClick={() => deleteSet(set.id)}>
+              Delete Set
+            </button>
+          </div>
         ))}
-    </div>
+      </div>
     ))}
+  </div>
+))}
 </div>
   </div>
 );
