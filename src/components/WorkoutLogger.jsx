@@ -10,27 +10,35 @@ function WorkoutLogger() {
   const [workouts, setWorkouts] = useState([]);
 
   function addWorkout() {
+  // Trim inputs
+  const cleanExercise = exercise.trim();
+  const w = Number(weight);
+  const r = Number(reps);
 
-    // Prevent empty inputs
-    if (exercise === "" || weight === "" || reps === "") {
-      return;
-    }
+  // Regex: only letters and spaces allowed
+  const exerciseValid = /^[A-Za-z\s]+$/.test(cleanExercise);
 
-    // Create workout object
-    const newWorkout = {
-      exercise: exercise,
-      weight: weight,
-      reps: reps,
-    };
+  // Number validation
+  const numbersValid = w > 0 && r > 0;
 
-    // Add new object into workouts array
-    setWorkouts([...workouts, newWorkout]);
-
-    // Clear inputs after submission
-    setExercise("");
-    setWeight("");
-    setReps("");
+  // Block invalid input
+  if (!exerciseValid || !numbersValid) {
+    alert("Invalid input: check exercise name and numbers (no negatives or symbols).");
+    return;
   }
+
+  const newWorkout = {
+    exercise: cleanExercise,
+    weight: w,
+    reps: r,
+  };
+
+  setWorkouts([...workouts, newWorkout]);
+
+  setExercise("");
+  setWeight("");
+  setReps("");
+}
 
 return (
   <div>
@@ -38,11 +46,17 @@ return (
 
     <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
       <input
-        type="text"
-        placeholder="Exercise"
-        value={exercise}
-        onChange={(e) => setExercise(e.target.value)}
-      />
+      type="text"
+      placeholder="Exercise"
+      value={exercise}
+      onChange={(e) => {
+        const value = e.target.value;
+        // allow only letters + spaces while typing
+        if (/^[A-Za-z\s]*$/.test(value)) {
+            setExercise(value);
+        }
+    }}
+    />
 
       <input
         type="number"
