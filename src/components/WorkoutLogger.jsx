@@ -187,13 +187,42 @@ return (
         onChange={(e) => setReps(e.target.value)}
       />
 
-      <button onClick={addWorkout}>
-  Add Set
-</button>
+      <div
+  style={{
+    display: "flex",
+    borderRadius: "8px",
+    overflow: "hidden",
+    border: "1px solid #444",
+  }}
+>
+  <div
+    onClick={() => setUnit("lbs")}
+    style={{
+      padding: "6px 12px",
+      cursor: "pointer",
+      backgroundColor: unit === "lbs" ? "#241a4d" : "transparent",
+      color: unit === "lbs" ? "white" : "#aaa",
+      fontWeight: unit === "lbs" ? "600" : "400",
+      userSelect: "none",
+    }}
+  >
+    lbs
+  </div>
 
-<button onClick={() => setUnit(unit === "lbs" ? "kg" : "lbs")}>
-  Unit: {unit}
-</button>
+  <div
+    onClick={() => setUnit("kg")}
+    style={{
+      padding: "6px 12px",
+      cursor: "pointer",
+      backgroundColor: unit === "kg" ? "#241a4d" : "transparent",
+      color: unit === "kg" ? "white" : "#aaa",
+      fontWeight: unit === "kg" ? "600" : "400",
+      userSelect: "none",
+    }}
+  >
+    kg
+  </div>
+</div>
     </div>
 
     <hr />
