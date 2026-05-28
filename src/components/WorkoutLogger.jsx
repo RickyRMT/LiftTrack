@@ -27,11 +27,15 @@ function WorkoutLogger() {
     return;
   }
 
+const normalizedExercise = cleanExercise.toLowerCase().trim();
+
 const newWorkout = {
   id: crypto.randomUUID(),
-  exercise: cleanExercise,
+  exercise: cleanExercise,          // for display
+  exerciseKey: normalizedExercise,  // for grouping
   weight: w,
   reps: r,
+  date: new Date().toLocaleDateString(),
 };
 
   setWorkouts([...workouts, newWorkout]);
@@ -41,22 +45,23 @@ const newWorkout = {
   setReps("");
 }
 
-const groupedWorkouts = workouts.reduce((groups, workout) => {
-  const key = workout.exercise.trim().toLowerCase();
+const groupedByDate = workouts.reduce((acc, workout) => {
+  const date = workout.date;
+  const key = workout.exerciseKey; // 🔥 ONLY this
 
-  const volume = workout.weight * workout.reps;
-
-  if (!groups[key]) {
-    groups[key] = {
+  if (!acc[date]) acc[date] = {};
+  if (!acc[date][key]) {
+    acc[date][key] = {
+      displayName: workout.exercise,
       sets: [],
       totalVolume: 0,
     };
   }
 
-  groups[key].sets.push(workout);
-  groups[key].totalVolume += volume;
+  acc[date][key].sets.push(workout);
+  acc[date][key].totalVolume += workout.weight * workout.reps;
 
-  return groups;
+  return acc;
 }, {});
 
 function formatExerciseName(name) {
@@ -142,43 +147,25 @@ return (
     <hr />
 
     <div>
-  {Object.entries(groupedWorkouts).map(([exerciseName, data]) => (
-    <div
-      key={exerciseName}
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        padding: "10px",
-        marginBottom: "10px",
-      }}
-    >
-      <h3>{formatExerciseName(exerciseName)}</h3>
+    {Object.entries(groupedByDate).map(([date, exercises]) => (
+    <div key={date}>
+        <h2>{date}</h2>
 
-      <p>
-        <strong>Total Volume:</strong> {data.totalVolume}
-      </p>
-      <button
-      onClick={() => deleteExercise(exerciseName)}
-      style={{ marginTop: "5px" }}
-      >
-        Delete Exercise
-        </button>
+        {Object.entries(exercises).map(([exerciseName, data]) => (
+        <div key={exerciseName}>
+            <h3>{formatExerciseName(data.displayName)}</h3>
 
-      {data.sets.map((set, index) => (
-  <div key={index} style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-    <span>
-      {set.weight} lbs × {set.reps} reps
-    </span>
+            <p>Total Volume: {data.totalVolume}</p>
 
-    <button
-      onClick={() => deleteSet(set.id)}
-    >
-      Delete Set
-    </button>
-  </div>
-))}
+            {data.sets.map((set) => (
+            <div key={set.id}>
+                {set.weight} x {set.reps}
+            </div>
+            ))}
+        </div>
+        ))}
     </div>
-  ))}
+    ))}
 </div>
   </div>
 );
