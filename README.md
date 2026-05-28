@@ -78,4 +78,4 @@ I want this repository to reflect continuous learning, improvement, and the tran
 
 Current focus:
 
-Micro Task #1: PR Calculator
+Workout Logger
