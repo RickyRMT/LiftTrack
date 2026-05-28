@@ -35,11 +35,12 @@ const normalizedExercise = cleanExercise.toLowerCase().trim();
 
 const newWorkout = {
   id: crypto.randomUUID(),
-  exercise: cleanExercise,          // for display
-  exerciseKey: normalizedExercise,  // for grouping
+  exercise: cleanExercise,
+  exerciseKey: normalizedExercise,
   weight: w,
   reps: r,
   date: new Date().toLocaleDateString(),
+  completed: false,
 };
 
   setWorkouts([...workouts, newWorkout]);
@@ -154,6 +155,16 @@ useEffect(() => {
     window.removeEventListener("keydown", handleKeyDown);
   };
 }, []);
+
+function toggleSetComplete(id) {
+  setWorkouts((prev) =>
+    prev.map((set) =>
+      set.id === id
+        ? { ...set, completed: !set.completed }
+        : set
+    )
+  );
+}
 
 return (
   <div>
@@ -277,13 +288,14 @@ return (
             <div className="setRow"
             key={set.id}
             style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "8px 10px",
-                marginBottom: "6px",
-                backgroundColor: "#241a4d",
-                borderRadius: "8px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "8px 10px",
+            marginBottom: "6px",
+            backgroundColor: set.completed ? "#1f3a2e" : "#241a4d",
+            borderRadius: "8px",
+            opacity: set.completed ? 0.6 : 1,
             }}
             >
     {editingSetId === set.id ? (
@@ -308,6 +320,11 @@ return (
     ) : (
       <>
         <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <input
+            type="checkbox"
+            checked={set.completed || false}
+            onChange={() => toggleSetComplete(set.id)}
+        />
         <span className="setNumber">{index + 1}</span>
         {set.weight} {unit} × {set.reps}
         </span>
