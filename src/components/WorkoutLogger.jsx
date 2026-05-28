@@ -43,11 +43,17 @@ function WorkoutLogger() {
 const groupedWorkouts = workouts.reduce((groups, workout) => {
   const key = workout.exercise.trim().toLowerCase();
 
+  const volume = workout.weight * workout.reps;
+
   if (!groups[key]) {
-    groups[key] = [];
+    groups[key] = {
+      sets: [],
+      totalVolume: 0,
+    };
   }
 
-  groups[key].push(workout);
+  groups[key].sets.push(workout);
+  groups[key].totalVolume += volume;
 
   return groups;
 }, {});
@@ -102,26 +108,30 @@ return (
     <hr />
 
     <div>
-  {Object.entries(groupedWorkouts).map(([exerciseName, sets]) => (
+  {Object.entries(groupedWorkouts).map(([exerciseName, data]) => (
     <div
       key={exerciseName}
       style={{
         border: "1px solid #ddd",
         borderRadius: "8px",
         padding: "10px",
-        marginBottom: "10px"
+        marginBottom: "10px",
       }}
     >
       <h3>{formatExerciseName(exerciseName)}</h3>
 
-      {sets.map((set, index) => (
+      <p>
+        <strong>Total Volume:</strong> {data.totalVolume}
+      </p>
+
+      {data.sets.map((set, index) => (
         <div key={index}>
-          {set.weight} lbs × {set.reps}
+          {set.weight} lbs × {set.reps} reps
         </div>
       ))}
-      </div>
+    </div>
   ))}
-  </div>
+</div>
   </div>
 );
 
