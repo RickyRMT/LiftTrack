@@ -40,6 +40,18 @@ function WorkoutLogger() {
   setReps("");
 }
 
+const groupedWorkouts = workouts.reduce((groups, workout) => {
+  const key = workout.exercise.trim().toLowerCase();
+
+  if (!groups[key]) {
+    groups[key] = [];
+  }
+
+  groups[key].push(workout);
+
+  return groups;
+}, {});
+
 return (
   <div>
     <h2>Workout Logger</h2>
@@ -55,7 +67,7 @@ return (
         if (/^[A-Za-z\s]*$/.test(value)) {
             setExercise(value);
         }
-    }}
+      }}
     />
 
       <input
@@ -80,22 +92,26 @@ return (
     <hr />
 
     <div>
-      {workouts.map((workout, index) => (
-  <div key={index} style={{ padding: "8px", marginBottom: "5px", border: "1px solid #ddd", borderRadius: "6px" }}>
-    <strong>{workout.exercise}</strong>
-    <div>{workout.weight} lbs × {workout.reps}</div>
-
-    <button
-      onClick={() => {
-        const updated = workouts.filter((_, i) => i !== index);
-        setWorkouts(updated);
+  {Object.entries(groupedWorkouts).map(([exerciseName, sets]) => (
+    <div
+      key={exerciseName}
+      style={{
+        border: "1px solid #ddd",
+        borderRadius: "8px",
+        padding: "10px",
+        marginBottom: "10px"
       }}
     >
-      Delete
-    </button>
+      <h3>{exerciseName}</h3>
+
+      {sets.map((set, index) => (
+        <div key={index}>
+          {set.weight} lbs × {set.reps}
+        </div>
+      ))}
+      </div>
+  ))}
   </div>
-    ))}
-    </div>
   </div>
 );
 
