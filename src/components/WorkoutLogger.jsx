@@ -27,11 +27,12 @@ function WorkoutLogger() {
     return;
   }
 
-  const newWorkout = {
-    exercise: cleanExercise,
-    weight: w,
-    reps: r,
-  };
+const newWorkout = {
+  id: crypto.randomUUID(),
+  exercise: cleanExercise,
+  weight: w,
+  reps: r,
+};
 
   setWorkouts([...workouts, newWorkout]);
 
@@ -68,26 +69,36 @@ function formatExerciseName(name) {
     .join(" ");
 }
 
-function deleteSet(exercise, indexToDelete) {
-  const updated = workouts.filter((w) => {
-    const key = w.exercise.trim().toLowerCase();
+function deleteExercise(exercise) {
+  const confirmDelete = window.confirm(
+    `Are you sure you want to delete ALL ${formatExerciseName(exercise)} sets? This cannot be undone.`
+  );
 
-    return !(
-      key === exercise &&
-      workouts
-        .filter((x) => x.exercise.trim().toLowerCase() === exercise)
-        .indexOf(w) === indexToDelete
-    );
-  });
+  if (!confirmDelete) return;
+
+  const updated = workouts.filter(
+    (w) => w.exercise.trim().toLowerCase() !== exercise
+  );
 
   setWorkouts(updated);
 }
 
 function deleteExercise(exercise) {
+  const confirmDelete = window.confirm(
+    `Are you sure you want to delete ALL ${formatExerciseName(exercise)} sets? This cannot be undone.`
+  );
+
+  if (!confirmDelete) return;
+
   const updated = workouts.filter(
     (w) => w.exercise.trim().toLowerCase() !== exercise
   );
 
+  setWorkouts(updated);
+}
+
+function deleteSet(id) {
+  const updated = workouts.filter((w) => w.id !== id);
   setWorkouts(updated);
 }
 
@@ -160,7 +171,7 @@ return (
     </span>
 
     <button
-      onClick={() => deleteSet(exerciseName, index)}
+      onClick={() => deleteSet(set.id)}
     >
       Delete Set
     </button>
