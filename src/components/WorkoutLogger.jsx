@@ -8,6 +8,7 @@ function WorkoutLogger() {
   const [editingSetId, setEditingSetId] = useState(null);
   const [editWeight, setEditWeight] = useState("");
   const [editReps, setEditReps] = useState("");
+  const unit = "lbs";
 
   // Array that stores all workout entries
   const [workouts, setWorkouts] = useState([]);
@@ -275,7 +276,7 @@ return (
       <>
         <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         <span className="setNumber">{index + 1}</span>
-        {set.weight} × {set.reps}
+        {set.weight} {unit} × {set.reps}
         </span>
 
         <div style={{ display: "flex", gap: "8px" }}>
