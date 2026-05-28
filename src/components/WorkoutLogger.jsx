@@ -32,10 +32,11 @@ function WorkoutLogger() {
     setReps("");
   }
 
-  return (
-    <div>
-      <h2>Workout Logger</h2>
+return (
+  <div>
+    <h2>Workout Logger</h2>
 
+    <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
       <input
         type="text"
         placeholder="Exercise"
@@ -60,18 +61,31 @@ function WorkoutLogger() {
       <button onClick={addWorkout}>
         Add Set
       </button>
+    </div>
 
-      <hr />
+    <hr />
 
+    <div>
       {workouts.map((workout, index) => (
-        <div key={index}>
-          <p>
-            {workout.exercise} — {workout.weight} lbs × {workout.reps}
-          </p>
+        <div
+          key={index}
+          style={{
+            padding: "8px",
+            marginBottom: "5px",
+            border: "1px solid #ddd",
+            borderRadius: "6px"
+          }}
+        >
+          <strong>{workout.exercise}</strong>
+          <div>
+            {workout.weight} lbs × {workout.reps}
+          </div>
         </div>
       ))}
     </div>
-  );
+  </div>
+);
+
 }
 
 export default WorkoutLogger;
