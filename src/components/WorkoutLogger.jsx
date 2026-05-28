@@ -67,21 +67,20 @@ return (
 
     <div>
       {workouts.map((workout, index) => (
-        <div
-          key={index}
-          style={{
-            padding: "8px",
-            marginBottom: "5px",
-            border: "1px solid #ddd",
-            borderRadius: "6px"
-          }}
-        >
-          <strong>{workout.exercise}</strong>
-          <div>
-            {workout.weight} lbs × {workout.reps}
-          </div>
-        </div>
-      ))}
+  <div key={index} style={{ padding: "8px", marginBottom: "5px", border: "1px solid #ddd", borderRadius: "6px" }}>
+    <strong>{workout.exercise}</strong>
+    <div>{workout.weight} lbs × {workout.reps}</div>
+
+    <button
+      onClick={() => {
+        const updated = workouts.filter((_, i) => i !== index);
+        setWorkouts(updated);
+      }}
+    >
+      Delete
+    </button>
+  </div>
+    ))}
     </div>
   </div>
 );
