@@ -68,6 +68,29 @@ function formatExerciseName(name) {
     .join(" ");
 }
 
+function deleteSet(exercise, indexToDelete) {
+  const updated = workouts.filter((w) => {
+    const key = w.exercise.trim().toLowerCase();
+
+    return !(
+      key === exercise &&
+      workouts
+        .filter((x) => x.exercise.trim().toLowerCase() === exercise)
+        .indexOf(w) === indexToDelete
+    );
+  });
+
+  setWorkouts(updated);
+}
+
+function deleteExercise(exercise) {
+  const updated = workouts.filter(
+    (w) => w.exercise.trim().toLowerCase() !== exercise
+  );
+
+  setWorkouts(updated);
+}
+
 return (
   <div>
     <h2>Workout Logger</h2>
@@ -123,12 +146,26 @@ return (
       <p>
         <strong>Total Volume:</strong> {data.totalVolume}
       </p>
+      <button
+      onClick={() => deleteExercise(exerciseName)}
+      style={{ marginTop: "5px" }}
+      >
+        Delete Exercise
+        </button>
 
       {data.sets.map((set, index) => (
-        <div key={index}>
-          {set.weight} lbs × {set.reps} reps
-        </div>
-      ))}
+  <div key={index} style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+    <span>
+      {set.weight} lbs × {set.reps} reps
+    </span>
+
+    <button
+      onClick={() => deleteSet(exerciseName, index)}
+    >
+      Delete Set
+    </button>
+  </div>
+))}
     </div>
   ))}
 </div>
