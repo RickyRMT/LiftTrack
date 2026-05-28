@@ -104,6 +104,19 @@ function deleteSet(id) {
   setWorkouts((prev) => prev.filter((w) => w.id !== id));
 }
 
+function duplicateSet(set) {
+  const newSet = {
+    id: crypto.randomUUID(),
+    exercise: set.exercise,
+    exerciseKey: set.exerciseKey,
+    weight: set.weight,
+    reps: set.reps,
+    date: set.date,
+  };
+
+  setWorkouts((prev) => [...prev, newSet]);
+}
+
 return (
   <div>
     <h2>Workout Logger</h2>
@@ -174,22 +187,28 @@ return (
 
         {/* Sets */}
         {group.sets.map((set) => (
-          <div
+        <div
             key={set.id}
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              padding: "5px 0",
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "5px 0",
             }}
-          >
+        >
             <span>
-              {set.weight} × {set.reps}
+            {set.weight} × {set.reps}
             </span>
 
-            <button onClick={() => deleteSet(set.id)}>
-              Delete Set
+            <div style={{ display: "flex", gap: "8px" }}>
+            <button onClick={() => duplicateSet(set)}>
+                +
             </button>
-          </div>
+
+            <button onClick={() => deleteSet(set.id)}>
+                Delete
+            </button>
+            </div>
+        </div>
         ))}
       </div>
     ))}
