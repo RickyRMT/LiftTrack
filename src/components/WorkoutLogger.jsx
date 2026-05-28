@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function WorkoutLogger() {
   // Input states
   const [exercise, setExercise] = useState("");
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("");
+  const [editingSetId, setEditingSetId] = useState(null);
+  const [editWeight, setEditWeight] = useState("");
+  const [editReps, setEditReps] = useState("");
 
   // Array that stores all workout entries
   const [workouts, setWorkouts] = useState([]);
@@ -47,7 +50,7 @@ const newWorkout = {
 
 const groupedByDate = workouts.reduce((acc, workout) => {
   const date = workout.date;
-  const key = workout.exerciseKey; // 🔥 ONLY this
+  const key = workout.exerciseKey;
 
   if (!acc[date]) acc[date] = {};
   if (!acc[date][key]) {
@@ -74,21 +77,9 @@ function formatExerciseName(name) {
     .join(" ");
 }
 
-function deleteExercise(exercise) {
-  const confirmDelete = window.confirm(
-    `Are you sure you want to delete ALL ${formatExerciseName(exercise)} sets? This cannot be undone.`
-  );
-
-  if (!confirmDelete) return;
-
-  const updated = workouts.filter(
-    (w) => w.exercise.trim().toLowerCase() !== exercise
-  );
-
-  setWorkouts(updated);
-}
-
 function deleteExercise(exerciseKey) {
+  setEditingSetId(null); 
+
   const confirmDelete = window.confirm(
     "Are you sure you want to delete this entire exercise?"
   );
@@ -101,10 +92,14 @@ function deleteExercise(exerciseKey) {
 }
 
 function deleteSet(id) {
+  setEditingSetId(null); 
+
   setWorkouts((prev) => prev.filter((w) => w.id !== id));
 }
 
 function duplicateSet(set) {
+  setEditingSetId(null); 
+
   const newSet = {
     id: crypto.randomUUID(),
     exercise: set.exercise,
@@ -116,6 +111,48 @@ function duplicateSet(set) {
 
   setWorkouts((prev) => [...prev, newSet]);
 }
+
+function startEdit(set) {
+  setEditingSetId(set.id);
+  setEditWeight(set.weight);
+  setEditReps(set.reps);
+}
+
+function saveEdit() {
+  const w = Number(editWeight);
+  const r = Number(editReps);
+
+  if (w <= 0 || r <= 0) {
+    alert("Invalid values");
+    return;
+  }
+
+  setWorkouts((prev) =>
+    prev.map((set) =>
+      set.id === editingSetId
+        ? { ...set, weight: w, reps: r }
+        : set
+    )
+  );
+
+  setEditingSetId(null);
+  setEditWeight("");
+  setEditReps("");
+}
+
+useEffect(() => {
+  function handleKeyDown(e) {
+    if (e.key === "Escape") {
+      setEditingSetId(null);
+    }
+  }
+
+  window.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+  };
+}, []);
 
 return (
   <div>
@@ -164,21 +201,37 @@ return (
     {Object.entries(exercises).map(([exerciseKey, group]) => (
       <div
         key={exerciseKey}
-        style={{
-          border: "1px solid #ddd",
-          borderRadius: "10px",
-          padding: "12px",
-          marginBottom: "15px",
-          backgroundColor: "#181236",
+            style={{
+            border: "1px solid #ddd",
+            borderRadius: "10px",
+            padding: "12px",
+            marginBottom: "15px",
+            backgroundColor: "#181236",
+            color: "#ffffff"
         }}
-      >
+        >
         {/* Header row */}
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <h3>{formatExerciseName(group.displayName)}</h3>
+        <div
+        style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "8px 10px",
+        marginBottom: "6px",
+        backgroundColor: "#241a4d",
+        borderRadius: "8px",
+        transition: "0.15s ease",
+        }}
+        >
+        <h3 style={{ margin: 0 }}>
+            {formatExerciseName(group.displayName)}
+        </h3>
 
-          <button onClick={() => deleteExercise(exerciseKey)}>
+        <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+            <button onClick={() => deleteExercise(exerciseKey)}>
             Delete Exercise
-          </button>
+            </button>
+        </div>
         </div>
 
         <p>
@@ -187,29 +240,58 @@ return (
 
         {/* Sets */}
         {group.sets.map((set) => (
-        <div
+            <div className="setRow"
             key={set.id}
             style={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "5px 0",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "8px 10px",
+                marginBottom: "6px",
+                backgroundColor: "#241a4d",
+                borderRadius: "8px",
             }}
-        >
-            <span>
-            {set.weight} × {set.reps}
-            </span>
+            >
+    {editingSetId === set.id ? (
+      <div style={{ display: "flex", gap: "5px" }}>
+        <input
+          type="number"
+          value={editWeight}
+          onChange={(e) => setEditWeight(e.target.value)}
+          style={{ width: "60px" }}
+        />
 
-            <div style={{ display: "flex", gap: "8px" }}>
-            <button onClick={() => duplicateSet(set)}>
-                +
-            </button>
+        <input
+          type="number"
+          value={editReps}
+          onChange={(e) => setEditReps(e.target.value)}
+          style={{ width: "60px" }}
+        />
 
-            <button onClick={() => deleteSet(set.id)}>
-                Delete
-            </button>
-            </div>
+        <button onClick={saveEdit}>Save</button>
+        <button onClick={() => setEditingSetId(null)}>Cancel</button>
+      </div>
+    ) : (
+      <>
+        <span>
+          {set.weight} × {set.reps}
+        </span>
+
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button onClick={() => startEdit(set)}>Edit</button>
+
+          <button onClick={() => duplicateSet(set)}>
+            +
+          </button>
+
+          <button onClick={() => deleteSet(set.id)}>
+            Delete
+          </button>
         </div>
-        ))}
+      </>
+    )}
+  </div>
+))}
       </div>
     ))}
   </div>
