@@ -8,7 +8,7 @@ function WorkoutLogger() {
   const [editingSetId, setEditingSetId] = useState(null);
   const [editWeight, setEditWeight] = useState("");
   const [editReps, setEditReps] = useState("");
-  const unit = "lbs";
+  const [unit, setUnit] = useState("lbs");
 
   // Array that stores all workout entries
   const [workouts, setWorkouts] = useState([]);
@@ -188,8 +188,12 @@ return (
       />
 
       <button onClick={addWorkout}>
-        Add Set
-      </button>
+  Add Set
+</button>
+
+<button onClick={() => setUnit(unit === "lbs" ? "kg" : "lbs")}>
+  Unit: {unit}
+</button>
     </div>
 
     <hr />
