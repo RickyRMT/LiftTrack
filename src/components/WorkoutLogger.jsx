@@ -239,7 +239,7 @@ return (
         </p>
 
         {/* Sets */}
-        {group.sets.map((set) => (
+        {group.sets.map((set, index) => (
             <div className="setRow"
             key={set.id}
             style={{
@@ -273,8 +273,9 @@ return (
       </div>
     ) : (
       <>
-        <span>
-          {set.weight} × {set.reps}
+        <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <span className="setNumber">{index + 1}</span>
+        {set.weight} × {set.reps}
         </span>
 
         <div style={{ display: "flex", gap: "8px" }}>
